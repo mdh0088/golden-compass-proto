@@ -1,4 +1,4 @@
-Write-Host "🧪 콘텐츠 생성 테스트..." -ForegroundColor Yellow
+Write-Host "Running content generation test..." -ForegroundColor Yellow
 
 $headers = @{
     "Content-Type" = "application/json"
@@ -14,11 +14,12 @@ try {
         -Method Post `
         -Headers $headers `
         -Body $body
-    
-    Write-Host "✅ 태스크 ID: $($response.task_id)" -ForegroundColor Green
-    Write-Host "📊 상태: $($response.status)" -ForegroundColor Cyan
-    Write-Host "`n💡 대시보드에서 진행 상황을 확인하세요: http://localhost:3000" -ForegroundColor Yellow
+
+    Write-Host "Task ID: $($response.task_id)" -ForegroundColor Green
+    Write-Host "Status: $($response.status)" -ForegroundColor Cyan
+    Write-Host "Check the dashboard for progress: http://localhost:3000" -ForegroundColor Yellow
 }
 catch {
-    Write-Host "❌ 오류 발생: $_" -ForegroundColor Red
+    Write-Host "Error occurred: $_" -ForegroundColor Red
 }
+

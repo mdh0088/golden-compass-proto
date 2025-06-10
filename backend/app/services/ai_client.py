@@ -1,12 +1,14 @@
 import openai
-from elevenlabs import generate, Voice
+from elevenlabs.client import ElevenLabs
+from elevenlabs import save
 from app.core.config import settings
 import asyncio
 
 
 class AIClient:
     def __init__(self):
-        openai.api_key = settings.OPENAI_API_KEY
+        self.openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        self.elevenlabs_client = ElevenLabs(api_key=settings.ELEVENLABS_API_KEY)
 
     async def generate_short_script(self, topic: str, index: int) -> dict:
         """숏츠용 30초 스크립트 생성"""
@@ -24,8 +26,7 @@ class AIClient:
         반드시 "황금나침반"을 언급하세요.
         """
 
-        response = await asyncio.to_thread(
-            openai.chat.completions.create,
+        response = self.openai_client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=500
@@ -35,8 +36,7 @@ class AIClient:
 
         # 제목 생성
         title_prompt = f"다음 스크립트의 매력적인 YouTube 숏츠 제목을 만들어주세요 (10자 이내): {script}"
-        title_response = await asyncio.to_thread(
-            openai.chat.completions.create,
+        title_response = self.openai_client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[{"role": "user", "content": title_prompt}],
             max_tokens=50
@@ -71,8 +71,7 @@ class AIClient:
         약 3000자 분량으로 작성해주세요.
         """
 
-        response = await asyncio.to_thread(
-            openai.chat.completions.create,
+        response = self.openai_client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4000
@@ -86,14 +85,18 @@ class AIClient:
 
     async def generate_voice(self, text: str, output_path: str) -> str:
         """ElevenLabs로 음성 생성"""
-        audio = await asyncio.to_thread(
-            generate,
-            text=text,
-            voice=Voice(voice_id=settings.ELEVENLABS_VOICE_ID),
-            model="eleven_multilingual_v2"
-        )
+        try:
+            # ElevenLabs 최신 API 사용
+            audio = self.elevenlabs_client.generate(
+                text=text,
+                voice=settings.ELEVENLABS_VOICE_ID,
+                model="eleven_multilingual_v2"
+            )
 
-        with open(output_path, "wb") as f:
-            f.write(audio)
+            # 오디오 저장
+            save(audio, output_path)
 
-        return output_path
+            return output_path
+        except Exception as e:
+            print(f"ElevenLabs 에러: {e}")
+            raise e
