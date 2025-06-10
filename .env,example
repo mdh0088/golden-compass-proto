@@ -1,0 +1,14 @@
+# Database
+DB_PASSWORD=localpassword123
+
+# OpenAI
+OPENAI_API_KEY=sk-proj-your-openai-api-key-here
+OPENAI_MODEL=gpt-4-turbo-preview
+
+# ElevenLabs
+ELEVENLABS_API_KEY=your-elevenlabs-api-key-here
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+
+# App
+SECRET_KEY=your-secret-key-for-local-dev
+DEBUG=true
