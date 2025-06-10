@@ -1,5 +1,6 @@
 from moviepy.editor import *
 from PIL import Image, ImageDraw, ImageFont
+from app.core.config import settings
 import numpy as np
 from pathlib import Path
 import os
